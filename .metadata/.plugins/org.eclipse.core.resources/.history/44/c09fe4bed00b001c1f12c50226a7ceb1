@@ -1,0 +1,31 @@
+package Interviews.Blackbuck;
+
+public class LengthSmallestSubArray {
+
+	/*
+	 * Given an array A[] consisting of N positive integers and an integer K, the
+	 * task is to find the length of the smallest subarray with a sum greater than
+	 * or equal to K. If no such subarray exists, print -1.
+	 */
+	public static void main(String[] args) {
+		System.out.println(getLengthOfSubArray(new int[] { 3, 1, 7, 1, 1 }, 11));
+	}
+
+	public static int getLengthOfSubArray(int[] arr, int k) {
+		int length = Integer.MAX_VALUE;
+		for (int i = 0; i < arr.length; i++) {
+			int currentLength = 1, currentSum = arr[i];
+			for (int j = i + 1; j < arr.length; j++) {
+				currentSum += arr[j];
+				if (currentSum <= k)
+					currentLength++;
+				else
+					break;
+			}
+			if (currentSum >= k)
+				length = Math.min(length, currentLength);
+		}
+		return length;
+
+	}
+}

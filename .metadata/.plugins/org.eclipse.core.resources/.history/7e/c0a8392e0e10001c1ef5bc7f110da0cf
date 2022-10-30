@@ -1,0 +1,24 @@
+package Interviews.Oyo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class TimeMap {
+
+	public Map<String, List<Employee>> map;
+
+	public TimeMap() {
+
+	}
+
+	public void set(String key, String value, int timestamp) {
+		if (!map.containsKey(key))
+			map.put(key, new ArrayList<Employee>());
+		
+	}
+
+	public String get(String key, int timestamp) {
+
+	}
+}

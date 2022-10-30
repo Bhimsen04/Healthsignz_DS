@@ -1,0 +1,11 @@
+package ParkingLot;
+
+import java.util.List;
+
+public class ParkingFloor {
+	int levelId;
+	boolean is Full;
+	List<ParkingSpace> parkingSpaces;
+
+	ParkingDisplayBoard parkingDisplayBoard;
+}

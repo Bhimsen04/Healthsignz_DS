@@ -1,0 +1,19 @@
+package Interviews.Oyo;
+
+public class Employee {
+
+	public int time;
+	public long value;
+
+	public Employee(int time, long value) {
+		super();
+		this.time = time;
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [time=" + time + ", value=" + value + "]";
+	}
+
+}

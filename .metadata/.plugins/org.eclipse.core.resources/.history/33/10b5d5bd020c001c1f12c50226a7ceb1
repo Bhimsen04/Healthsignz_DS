@@ -1,0 +1,31 @@
+package Test;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class CPU {
+	public static void main(String[] args) {
+
+		// Create the pool
+		int coreCount = Runtime.getRuntime().availableProcessors();
+		System.out.println(coreCount);
+		ExecutorService service = Executors.newFixedThreadPool(coreCount);
+
+		// Submit the task for execution
+		for (int i = 0; i < 100; i++) {
+			service.execute(new CPUIntensiveTask());
+			service.submit(new CPUIntensiveTask());
+		}
+
+		System.out.println("Thread Name :- " + Thread.currentThread().getName());
+
+	}
+
+	static class CPUIntensiveTask implements Runnable {
+
+		@Override
+		public void run() {
+			System.out.println("Child Thread Name :- " + Thread.currentThread().getName());
+		}
+	}
+}

@@ -1,0 +1,29 @@
+package Thread;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class ProducerConsumer {
+	int max = 0;
+	Object notEmpty = new Object();
+	Object notFull = new Object();
+	Queue<Integer> queue = new LinkedList<Integer>();
+
+	public ProducerConsumer(int max) {
+		this.max = max;
+	}
+
+	public synchronized void put(int m) throws InterruptedException {
+		while (queue.size() == max)
+			notFull.wait();
+		queue.add(m);
+		notEmpty.notifyAll();
+	}
+	
+	public synchronized void take(int m) throws InterruptedException {
+		while (queue.size() == 0)
+			notEmpty.wait();
+		queue.add(m);
+		notFull.notifyAll();
+	}
+}

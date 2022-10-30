@@ -1,0 +1,17 @@
+package ParkingLot;
+
+import java.util.List;
+
+public class ParkingLot {
+	List<ParkingFloor> parkingFloors;
+	List<Entrance> entrances;
+	List<Exit> exits;
+
+	// two metadata
+	Address address; 
+	String parkingLotName;
+
+	// two api's
+	public boolean isParkingSpaceAvailableForVehicle(Vehicle vehicle);
+	public boolean updateParkingAttndant(ParkingAttendant parkingAttendant, int gateId)
+}

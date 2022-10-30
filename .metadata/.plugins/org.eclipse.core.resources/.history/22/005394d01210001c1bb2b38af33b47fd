@@ -1,0 +1,19 @@
+package Interviews.Oyo;
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		// ["TimeMap","set","get","get","set","get","get"]
+		// [[],["foo","bar",1],["foo",1],["foo",3],["foo","bar2",4],["foo",4],["foo",5]]
+		TimeMap m = new TimeMap();
+		m.set("foo", "bar", 1);
+		m.get("foo", 1);
+		m.get("foo", 3);
+		m.set("foo", "bar2", 4);
+		m.get("foo", 4);
+		m.get("foo", 5);
+
+	}
+
+}

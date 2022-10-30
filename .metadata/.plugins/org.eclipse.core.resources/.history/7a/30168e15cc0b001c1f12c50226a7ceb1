@@ -1,0 +1,8 @@
+package Interviews.Blackbuck;
+
+public class CarPooling {
+
+	public boolean carPooling(int[][] trips , int capacity) {
+		
+	}
+}

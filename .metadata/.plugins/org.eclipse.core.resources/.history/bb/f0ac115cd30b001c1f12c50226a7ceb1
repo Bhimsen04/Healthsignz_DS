@@ -1,0 +1,28 @@
+package Interviews.Blackbuck;
+
+public class LengthSmallestSubArray {
+
+	// Smallest subarray with sum greater than a given value
+
+	public static void main(String[] args) {
+		System.out.println(getLengthOfSubArray(new int[] { 6, 3, 4, 5, 4, 3, 7, 9 }, 16)); // 3(3,1,7)
+	}
+
+	public static int getLengthOfSubArray(int[] arr, int k) {
+		int length = Integer.MAX_VALUE;
+		for (int i = 0; i < arr.length; i++) {
+			int currentLength = 1, currentSum = arr[i];
+			for (int j = i; j < arr.length; j++) {
+				if (currentSum < k) {
+					currentLength++;
+					currentSum += arr[j];
+				} else
+					break;
+			}
+			if (currentSum > k)
+				length = Math.min(length, currentLength);
+		}
+		return length;
+
+	}
+}

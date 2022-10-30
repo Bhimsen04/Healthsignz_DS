@@ -1,0 +1,24 @@
+package Interviews.Oyo;
+
+public class Employee implements Comparable<Employee> {
+
+	public int time;
+	public long value;
+
+	@Override
+	public int compareTo(Employee o) {
+		return (int) (this.time - o.time);
+	}
+
+	public Employee(int time, long value) {
+		super();
+		this.time = time;
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [time=" + time + ", value=" + value + "]";
+	}
+
+}

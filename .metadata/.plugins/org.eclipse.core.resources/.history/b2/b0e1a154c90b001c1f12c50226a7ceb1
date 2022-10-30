@@ -1,0 +1,22 @@
+package Interviews.Blackbuck;
+
+public class LengthSmallestSubArray {
+
+	public int getLengthOf
+
+	SubArray(int[] arr , int k){
+		  int length = Integer.MAX_value;
+		  for(int i = 0 ; i < arr.length; i++){
+		    int currentLength = 0;
+		    for(int j = i + 1 ; j < arr.length ; j++){
+		      if(arr[i] + arr[j] < k)
+		        currentLength++;
+		    }
+		    if(i==arr.length-1 && arr[i] >=k)
+		      currentLength = 1;
+		    length = Math.min(length , currentLength);   
+		  }
+		  return length;
+		}
+
+}}

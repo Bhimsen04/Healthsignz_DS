@@ -1,0 +1,7 @@
+package HotelManagementSystem;
+
+import java.util.List;
+
+public class HouseKeeper extends Person {
+	public List<Room> getRoomsServiced(date date);
+}

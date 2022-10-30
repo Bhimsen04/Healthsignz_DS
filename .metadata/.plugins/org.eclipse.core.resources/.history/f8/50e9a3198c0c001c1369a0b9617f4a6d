@@ -1,0 +1,13 @@
+
+public class Hackerearth {
+	public static void main(String[] args) {
+		String m ="bhim";
+		Langfunction l = () -> System.out.println(m + "sen");
+		m = "rajat";
+		l.callme();
+	}
+}
+
+interface Langfunction{
+	void callme();
+}

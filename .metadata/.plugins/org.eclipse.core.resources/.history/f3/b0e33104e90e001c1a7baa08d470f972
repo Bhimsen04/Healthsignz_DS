@@ -1,0 +1,49 @@
+package Search;
+
+public class Test {
+
+	public static void main(String[] args) {
+
+	}
+
+	public int[] searchRange(int[] nums, int target) {
+		int[] res = new int[2];
+		if (nums == null) {
+			res[0] = -1;
+			res[1] = -1;
+			return res;
+		}
+
+		res[0] = floor(nums, 0, nums.length - 1, target);
+		res[1] = ceil(nums, 0, nums.length - 1, target);
+		return res;
+
+	}
+
+	public int floor(int[] nums, int l, int h, int target) {
+		int floor = -1;
+		while (l <= h) {
+			int m = (l + h) / 2;
+			if (target <= nums[m]) {
+				if (nums[m] == target)
+					floor = m;
+				h = m - 1;
+			} else
+				l = m + 1;
+		}
+		return floor;
+	}
+
+	public int ceil(int[] nums, int l, int h, int target) {
+		int ceil = -1;
+		while (l <= h) {
+			int m = (l + h) / 2;
+			if (target >= nums[m]) {
+				ceil = m;
+				l = m + 1;
+			} else
+				h = m - 1;
+		}
+		return ceil;
+	}
+}

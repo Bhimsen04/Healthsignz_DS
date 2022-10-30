@@ -1,0 +1,38 @@
+package Stack_Queue;
+
+import java.util.Stack;
+
+public class Trapping_Rain_Water_Using_Stack {
+
+	// https://leetcode.com/problems/trapping-rain-water/
+	public static void main(String[] args) {
+		Trapping_Rain_Water_Using_Stack rain_Water = new Trapping_Rain_Water_Using_Stack();
+		int[] heightOfArr = { 6, 3, 1, 4, 5, 7, 2, 6, 4, 7, 4, 4 }; // { 0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1 }; // 
+		System.out.println(rain_Water.trap(heightOfArr));
+	}
+
+	public int trap(int[] arr) {
+		int sum = 0;
+		Stack<Integer> st = new Stack<>();
+		for (int i = 0; i < arr.length; i++) {
+			int currIdx = i;
+			int currEle = arr[currIdx];
+			while (!st.isEmpty() && currEle > arr[st.peek()]) {
+				int currentIndex = st.pop();
+				int current_height = arr[currentIndex];
+				if (st.isEmpty())
+					break;
+				int NLM_index = st.peek();
+				int NLM_height = arr[NLM_index];
+
+				int width = currIdx - NLM_index - 1;
+				int minimumTower = Math.min(currEle, NLM_height);
+				int height = minimumTower - current_height;
+				sum += width * height;
+			}
+			st.push(i);
+		}
+		return sum;
+	}
+
+}

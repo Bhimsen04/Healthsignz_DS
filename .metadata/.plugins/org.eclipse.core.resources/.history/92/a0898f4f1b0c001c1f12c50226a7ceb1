@@ -1,0 +1,16 @@
+package Thread;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+import javax.management.Query;
+
+public class ProducerConsumer {
+	Object notEmpty = new Object();
+	Object notFull = new Object();
+	Queue<Integer> queue = new LinkedList<Integer>();
+
+	public synchronized void push(int m) {
+		
+	}
+}

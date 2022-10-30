@@ -1,0 +1,20 @@
+<databaseChangeLog 
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+   http://www.liquibase.org/xml/ns/dbchangelog 
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    
+<!--     <preConditions onError="HALT" onFail="HALT" onFailMessage="Unauthorized aceess" onErrorMessage="custom error">
+    	<dbms type="derby"/>
+    	<runningAs username="liquibase1"/>
+    	<columnExists tableName="" columnName=""/>
+    	<rowCount expectedRows="0" tableName=""/>
+    </preConditions> -->
+    
+	<include file="src\main\resources\db\changelog\changelog1.xml"/>
+	<include file="src\main\resources\db\changelog\changelog2.xml"/>
+    
+</databaseChangeLog>

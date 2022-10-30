@@ -1,0 +1,18 @@
+1615220893449	Rename local variable 'maxLength'
+1615220917982	Rename local variable 'i'
+1615220925025	Rename local variable 'j'
+1615225426061	Rename type 'LongestPalindromicSubstring2'
+1615225520620	Rename method 'firstNonRepeating'
+1615395259650	Move compilation unit
+1615395267946	Move compilation unit
+1615395318769	Move compilation unit
+1615397718539	Rename type 'Binary_Search_Advanced'
+1615398109605	Rename type 'BS_Problem1'
+1615398575681	Rename type 'Painters_partition'
+1615398618198	Rename local variable 'A'
+1615398636025	Rename local variable 'B'
+1615398654878	Rename local variable 'C'
+1615398715968	Rename local variable 'C'
+1615427573124	Rename type 'ImplementStackUsingQueues'
+1615430341335	Rename method 'reverseLinkedList_iterativelu'
+1615430460929	Rename local variable 'temp'

@@ -1,0 +1,14 @@
+package ParkingLot;
+
+public class ParkingLot {
+	List<ParkingFloor> parkingFloors;
+	List<Entrance> entrances;
+	List<Exit> exits;
+
+	Address address; 
+
+	String parkingLotName;
+
+	public boolean isParkingSpaceAvailableForVehicle(Vehicle vehicle);
+	public boolean updateParkingAttndant(ParkingAttendant parkingAttendant, int gateId)
+}

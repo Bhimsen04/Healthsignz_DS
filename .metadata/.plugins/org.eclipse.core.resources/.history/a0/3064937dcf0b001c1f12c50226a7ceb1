@@ -1,0 +1,30 @@
+package Interviews.Blackbuck;
+
+public class CarPooling {
+
+	// https://leetcode.com/problems/car-pooling/
+	public boolean carPooling(int[][] trips, int capacity) {
+		int[] count = new int[1001]; // bcz km range between 1 to 1000 thats why took
+		for (int[] t : trips)
+			for (int i = t[1]; i < t[2]; i++) {
+				count[i] += t[0];
+				if (count[i] > capacity)
+					return false;
+			}
+		return true;
+	}
+
+	public boolean carPooling2(int[][] trips, int capacity) {
+		int[] count = new int[1001]; // bcz km range between 1 to 1000 thats why took
+		for (int[] t : trips) {
+			count[t[1]] += t[0];
+			count[t[2]] -= t[0];
+		}
+		for (int num : count) {
+			capacity -= num;
+			if (capacity < 0)
+				return false;
+		}
+		return true;
+	}
+}

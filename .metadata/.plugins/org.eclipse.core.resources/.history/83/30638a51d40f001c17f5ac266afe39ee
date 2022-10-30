@@ -1,0 +1,73 @@
+package PriorityQueue_Heap;
+
+import java.util.*;
+
+public class MergekSortedLists {
+
+	// https://leetcode.com/problems/merge-k-sorted-lists/submissions/
+	public ListNode mergeKLists(ListNode[] lists) {
+		if (lists == null)
+			return null;
+		PriorityQueue<ListNode> pq = new PriorityQueue<>(new MergekSortedListsComparator());
+
+//		we can't do this
+//		List<ListNode> l = new ArrayList<ListNode>(new MergekSortedListsComparator());
+//		Set<ListNode> s = new HashSet<ListNode>(new MergekSortedListsComparator());
+
+		for (ListNode node : lists)
+			if (node != null)
+				pq.offer(node);
+		ListNode dummy = new ListNode();
+		ListNode head = dummy;
+		head.next = pq.peek();
+		while (!pq.isEmpty()) {
+			ListNode curr = pq.poll();
+			if (curr.next != null)
+				pq.offer(curr.next);
+			dummy.next = curr;
+			dummy = curr;
+		}
+		return head.next;
+	}
+
+	static public class ListNode {
+		int val;
+		ListNode next;
+
+		public ListNode() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public ListNode(int val, ListNode next) {
+			this.val = val;
+			this.next = next;
+		}
+	}
+
+	public static void main(String[] args) {
+		ListNode node3 = new ListNode(15, null);
+		ListNode node2 = new ListNode(14, node3);
+		ListNode node1 = new ListNode(11, node2);
+
+		ListNode node13 = new ListNode(60, null);
+		ListNode node12 = new ListNode(55, node13);
+		ListNode node11 = new ListNode(51, node12);
+
+		ListNode node22 = new ListNode(36, null);
+		ListNode node21 = new ListNode(32, node22);
+
+		ListNode[] arr = new ListNode[3];
+		arr[0] = node1;
+		arr[1] = node11;
+		arr[2] = node21;
+
+		MergekSortedLists l = new MergekSortedLists();
+		ListNode ln = l.mergeKLists(arr);
+
+		while (ln != null) {
+			System.out.print(ln.val + "->");
+			ln = ln.next;
+		}
+	}
+
+}

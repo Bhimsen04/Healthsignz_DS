@@ -1,0 +1,12 @@
+package Interviews.Oyo;
+
+public class BS {
+
+	public static void main(String[] args) {
+		int[] arr = { 2, 5, 9, 15, 20 };
+		int l = 0, h = arr.length - 1;
+		while (l <= h) {
+			
+		}
+	}
+}

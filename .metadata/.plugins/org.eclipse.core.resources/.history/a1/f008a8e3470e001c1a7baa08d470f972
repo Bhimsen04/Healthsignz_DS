@@ -1,0 +1,52 @@
+package Recursion;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenerateParentheses {
+
+	// https://leetcode.com/problems/generate-parentheses/
+	public List<String> generateParenthesis(int n) {
+		ArrayList<String> list = new ArrayList<>();
+		char[] c = new char[n * 2];
+		rec(0,0,0,n*2,list,c);
+		return list;
+	}
+
+	public void bruteForce(int n) {
+		char ch[] = new char[n * 2];
+		for (int i = 0; i < Math.pow(2, n * 2); i++)
+			System.out.println(generate(ch, i, n * 2));
+	}
+
+	private String generate(char[] ch, int k, int n) {
+		for (int i = n - 1; i >= 0; i--) {
+			if (k % 2 == 1)
+				ch[i] = ')';
+			else
+				ch[i] = '(';
+			k = k >> 1;
+		}
+		return new String(ch);
+	}
+
+	public void generateParenthesis(int ob, int cb, int idx, int n, List<String> list, char[] c) {
+		if (idx == n)
+			list.add(new String(c));
+		if (ob < n / 2) {
+			c[idx] = '(';
+			generateParenthesis(ob + 1, cb, idx + 1, n, list, c);
+		}
+		if (cb < ob) {
+			c[idx] = ')';
+			generateParenthesis(ob, cb + 1, idx + 1, n, list, c);
+		}
+	}
+
+	public static void main(String[] args) {
+		GenerateParentheses gp = new GenerateParentheses();
+		gp.bruteForce(2);
+		System.out.println("///////////////////////////");
+		System.out.println(gp.generateParenthesis(3));
+	}
+}

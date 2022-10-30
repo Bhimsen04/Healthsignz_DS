@@ -1,0 +1,28 @@
+package HashingStrings;
+
+public class CountPalindromeSubstrings {
+	public int countSubstrings(String s) {
+		int result = 0;
+		for (int i = 0; i < s.length(); i++) {
+			int oddlength = calculateLength(s, i - 1, i + 1); // 1
+			int evenlength = calculateLength(s, i, i + 1); // 1
+			result += 1;
+			result += oddlength;
+			result += evenlength;
+		}
+		return result;
+	}
+
+	public int calculateLength(String s, int i, int j) {
+		int count = 0;
+		while (i >= 0 && j < s.length()) {
+			if (s.charAt(i) == s.charAt(j))
+				count++;
+			else
+				break;
+			i--;
+			j++;
+		}
+		return count;
+	}
+}

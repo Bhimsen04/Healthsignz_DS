@@ -1,0 +1,9 @@
+package Interviews.Oyo;
+
+import java.util.Map;
+
+public class Time {
+
+	Map<Integer , Treeset<Employee>> map
+	
+}

@@ -1,0 +1,47 @@
+package Stack_Queue;
+
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
+
+public class Sliding_window_maximum {
+	// https://leetcode.com/problems/sliding-window-maximum/
+	public static void main(String[] args) {
+		int[] arr = { 2, 1, 3, 2, 3 };
+		System.out.println(Arrays.toString(maxSlidingWindow(arr, 3)));
+
+	}
+
+	public static int[] maxSlidingWindow(int[] nums, int k) {
+		int[] res = new int[nums.length - k + 1];
+		Deque<Integer> deque = new LinkedList<Integer>();
+
+		for (int i = 0; i < k; i++)
+			deleteElementsLessThanCurrentElem_addCurrentEle(deque, i, nums);
+		for (int i = k; i < nums.length; i++) {
+			res[i - k] = nums[deque.peekFirst()];
+			if (!deque.isEmpty() && deque.peekFirst() == i - k)
+				deque.pollFirst(); // 7 , 6 , 5 , 4 , 3
+			deleteElementsLessThanCurrentElem_addCurrentEle(deque, i, nums);
+		}
+		res[nums.length - k] = nums[deque.peekFirst()];
+		return res;
+	}
+
+	private static void deleteElementsLessThanCurrentElem_addCurrentEle(Deque<Integer> deque, int idx, int[] arr) {
+		while (!deque.isEmpty() && arr[idx] >= arr[deque.peekLast()])
+			deque.pollLast();
+		deque.add(idx);
+	}
+
+	public static void bruteForce(int[] arr, int k) {
+		int[] ans = new int[arr.length - k + 1];
+		for (int i = 0; i < ans.length; i++) {
+			int max = arr[i];
+			for (int j = i + 1; j < i + k; j++)
+				max = Math.max(max, arr[j]);
+			ans[i] = max;
+		}
+		System.out.println(Arrays.toString(ans));
+	}
+}

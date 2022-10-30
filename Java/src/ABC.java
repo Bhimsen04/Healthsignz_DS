@@ -1,0 +1,6 @@
+
+interface ABC {
+
+	void go();
+
+}

@@ -1,0 +1,8 @@
+package ParkingLot;
+
+public class ParkingFloor {
+	int levelId;
+	List<ParkingSpace> parkingSpaces;
+
+	ParkingDisplayBoard parkingDisplayBoard;
+}

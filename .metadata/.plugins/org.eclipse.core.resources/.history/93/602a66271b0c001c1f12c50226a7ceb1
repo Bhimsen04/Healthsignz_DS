@@ -1,0 +1,6 @@
+package Thread;
+
+public class ProducerConsumer {
+	Object notEmpty = new Object();
+
+}

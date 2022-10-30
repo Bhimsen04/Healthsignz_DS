@@ -1,0 +1,10 @@
+package ParkingLot;
+
+public class Admin {
+	public boolean addParkingFloor(ParkingLot parkingLot, ParkingFloor floor);
+
+	public boolean addParkingSpace(ParkingFloor floor, ParkingSpace parkingSpace);
+
+	public boolean addParkingDisplayBoard(ParkingFloor floor, ParkingDisplayBoard parkingDisplayBoard);
+
+}

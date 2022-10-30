@@ -1,0 +1,7 @@
+package ParkingLot;
+
+public class ParkingDisplayBoard {
+	Map<ParkingSpaceType, Integer> freeSpotsAvailableMap;
+
+	public void updateFreeSpotsAvailable(ParkingSpaceType parkingSpaceType, int spaces);
+}

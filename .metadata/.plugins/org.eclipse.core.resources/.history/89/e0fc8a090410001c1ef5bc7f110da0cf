@@ -1,0 +1,13 @@
+package Interviews.Oyo;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
+public class Time {
+
+	public static void main(String[] args) {
+		Map<Integer, TreeSet<Employee>> map = new HashMap<Integer, TreeSet<Employee>>();
+		Employee emp = new Employee(100 , 1);
+	}
+}

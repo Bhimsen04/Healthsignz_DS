@@ -1,0 +1,22 @@
+package Interviews.Oyo;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+public class TimeMap {
+	public TimeMap() {
+
+	}
+
+	public void set(String key, String value, int timestamp) {
+
+	}
+
+	public String get(String key, int timestamp) {
+
+	}
+}

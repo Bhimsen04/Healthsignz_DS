@@ -1,0 +1,11 @@
+package porter;
+
+public enum VehicleType {
+
+	TWO_WHEELER(10), FOUR_WHEELER(20);
+	public int vehiclePrice;
+
+	private VehicleType(int vehiclePrice) {
+		this.vehiclePrice = vehiclePrice;
+	}
+}

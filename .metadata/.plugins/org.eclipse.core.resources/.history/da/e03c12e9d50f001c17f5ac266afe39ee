@@ -1,0 +1,30 @@
+package TreeProblems;
+
+public class DeepestLeave {
+	public int deepestLeavesSum(TreeNode root) {
+		if (root == null)
+			return 0;
+		Queue<TreeNode> queue = new LinkedList<TreeNode>();
+		queue.add(root);
+		queue.add(null);
+		int res = 0;
+		while (!queue.isEmpty()) {
+			List<Integer> list2 = new ArrayList<>();
+			int currentSum = 0;
+			while (queue.peek() != null) {
+				TreeNode temp = queue.poll();
+				if (temp.left == null && temp.right == null)
+					currentSum += temp.val;
+				if (temp.left != null)
+					queue.add(temp.left);
+				if (temp.right != null)
+					queue.add(temp.right);
+			}
+			res = currentSum;
+			queue.poll();
+			if (!queue.isEmpty())
+				queue.add(null);
+		}
+		return res;
+	}
+}

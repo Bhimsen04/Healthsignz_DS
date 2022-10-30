@@ -1,0 +1,10 @@
+
+class gg implements ABC {
+
+	@Override
+	void go() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

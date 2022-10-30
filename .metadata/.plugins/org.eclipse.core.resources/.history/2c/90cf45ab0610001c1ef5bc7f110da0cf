@@ -1,0 +1,39 @@
+package Interviews.Oyo;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+public class Time {
+
+	public static void main(String[] args) {
+		Map<Integer, List<Employee>> map = new HashMap<Integer, TreeSet<Employee>>();
+		Employee emp = new Employee(100, 1);
+		Employee emp2 = new Employee(94, 2);
+		Employee emp3 = new Employee(200, 3);
+		Employee emp4 = new Employee(150, 4);
+
+		map.put(1000, new ArrayList<Employee>());
+		map.get(1000).add(emp);
+		map.get(1000).add(emp2);
+
+		map.put(1001, new ArrayList<Employee>());
+		map.get(1001).add(emp3);
+		map.get(1001).add(emp4);
+
+		System.out.println(map);
+
+		Comparator<Employee> e = new Comparator<>() {
+			public int compare(Employee e1, Employee e2) {
+				return (int) (this.time - o.time);
+			}
+		};
+		int index = Collections.binarySearch(map.get(1000), new Employee(10, 0));
+		System.out.println("Found at index  " + index);
+
+	}
+}

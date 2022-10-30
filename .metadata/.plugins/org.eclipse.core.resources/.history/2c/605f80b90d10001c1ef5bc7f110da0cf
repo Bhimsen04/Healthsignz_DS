@@ -1,0 +1,20 @@
+package Interviews.Oyo;
+
+import java.util.Map;
+
+public class TimeMap {
+	
+	Map<String , Map<Integer , String>> map;
+	
+	public TimeMap() {
+
+	}
+
+	public void set(String key, String value, int timestamp) {
+
+	}
+
+	public String get(String key, int timestamp) {
+
+	}
+}

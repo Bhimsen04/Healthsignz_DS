@@ -1,0 +1,31 @@
+public class Solution {
+	static int gcd(int a, int b) {
+		if (a == 0)
+			return b;
+
+		return gcd(b % a, a);
+	}
+
+	static int divTermCount(int a, int b, int lcm, int num) {
+		return num / a + num / b - num / lcm;
+	}
+
+	static int findNthTerm(int a, int b, int n) {
+		int low = 1, high = Integer.MAX_VALUE, mid;
+		int lcm = (a * b) / gcd(a, b);
+
+		while (low < high) {
+			mid = low + (high - low) / 2;
+			if (divTermCount(a, b, lcm, mid) < n)
+				low = mid + 1;
+			else
+				high = mid;
+		}
+		return low;
+	}
+
+	public static void main(String[] args) {
+		int a = 4, b = 6, n = 3;
+		System.out.println(findNthTerm(a, b, n));
+	}
+}

@@ -1,0 +1,6 @@
+package HotelManagementSystem;
+
+public class Booking {
+
+	public RoomBooking createBooking(Guest guestInfo);
+}

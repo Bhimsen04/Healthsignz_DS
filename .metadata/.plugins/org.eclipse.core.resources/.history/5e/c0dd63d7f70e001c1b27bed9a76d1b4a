@@ -1,0 +1,5 @@
+package HashingStrings;
+
+public class CountPalindromeSubstrings {
+
+}

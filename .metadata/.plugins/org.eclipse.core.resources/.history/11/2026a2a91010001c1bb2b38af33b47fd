@@ -1,0 +1,20 @@
+package Interviews.Oyo;
+
+public class BS {
+
+	public static void main(String[] args) {
+		int[] arr = { 2, 5, 9, 15, 20 };
+		int l = 0, h = arr.length - 1, target = 1100;
+		while (l <= h) {
+			int m = (l + h) / 2;
+			if (arr[m] == target) {
+				System.out.println(arr[m]);
+				break;
+			} else if (arr[m] > target)
+				h = m - 1;
+			else
+				l = m + 1;
+		}
+		System.out.println(arr[l - 1]);
+	}
+}

@@ -1,0 +1,14 @@
+package HotelManagementSystem;
+
+public class InRoomPurchaseCharges implements BaseRoomCharge {
+
+	Double cost;
+	RoomCharge baseRoomCharge;
+
+	@Override
+	public Double getCost() {
+		baseRoomCharge.setCost(baseRoomCharge.getCost() + cost);
+		return baseRoomCharge.getCost();
+	}
+
+}

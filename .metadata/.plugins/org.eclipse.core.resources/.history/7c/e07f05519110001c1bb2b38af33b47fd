@@ -1,0 +1,11 @@
+package HotelManagementSystem;
+
+public class InRoomPurchaseCharges implements BaseRoomCharge {
+
+	@Override
+	public Double getCost() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

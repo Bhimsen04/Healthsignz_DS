@@ -1,0 +1,37 @@
+package Sorting;
+
+public class Test {
+	public int[] sortArray(int[] nums) {
+		merge(nums, 0, nums.length - 1);
+		return nums;
+	}
+
+	public void merge(int[] nums, int low, int high) {
+		if (low > high)
+			return;
+		int mid = (low + high) / 2;
+		merge(nums, 0, mid);
+		merge(nums, mid + 1, high);
+		mergeProcess(nums, low, mid, high);
+	}
+
+	public void mergeProcess(int[] nums, int low, int mid, int high) {
+		int[] arr = new int[high - low + 1];
+		int i = low, j = mid, t = 0;
+		while (i <= mid && j <= high) {
+			if (nums[i] < nums[j])
+				arr[t++] = nums[i++];
+			else
+				arr[t++] = nums[j++];
+		}
+		while (i <= mid)
+			arr[t++] = nums[i++];
+		while (j <= high)
+			arr[t++] = nums[j++];
+		t = 0;
+		while (low < high - low + 1) {
+			nums[low + t] = arr[t];
+			t++;
+		}
+	}
+}

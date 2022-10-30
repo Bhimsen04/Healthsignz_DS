@@ -1,0 +1,5 @@
+import ParkingLot.Gate;
+
+public class Entrance extends Gate{
+
+}

@@ -1,0 +1,35 @@
+package Interviews.Oyo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class TimeMap {
+
+	public Map<String, List<Time>> map;
+
+	public void set(String key, String value, int timestamp) {
+		if (!map.containsKey(key))
+			map.put(key, new ArrayList<Time>());
+		map.get(key).add(new Time(timestamp, value));
+	}
+
+	public String get(String key, int timestamp) {
+		if (!map.containsKey(key))
+			return "";
+		List<Time> list = new ArrayList<Time>();
+		int l = 0, h = list.size() - 1;
+		while (l <= h) {
+			int m = (l + h) / 2;
+			if (list.get(m).time == timestamp)
+				return list.get(m).value;
+			else if (list.get(m).time > timestamp)
+				h = m - 1;
+			else
+				l = m + 1;
+		}
+		if (l < 0)
+			return "";
+		return list.get(l - 1).value;
+	}
+}

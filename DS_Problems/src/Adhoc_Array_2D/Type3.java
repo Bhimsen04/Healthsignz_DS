@@ -1,0 +1,33 @@
+package Adhoc_Array_2D;
+
+public class Type3 {
+	public static void main(String[] args) {
+		int[][] arr = { 
+				{ 0, 0, 0, 1, 1, 1, 1 }, 
+				{ 0, 0, 0, 0, 1, 1, 1 }, 
+				{ 0, 0, 0, 1, 1, 1, 1 },
+				{ 0, 0, 1, 1, 1, 1, 1 }, 
+				{ 0, 0, 0, 1, 1, 1, 1 }, 
+				{ 0, 1, 1, 1, 1, 1, 1 } };
+		System.out.println(rowWithMaxNo_Ones(arr));
+	}
+
+	private static int rowWithMaxNo_Ones(int[][] arr) {
+		int ROWS = arr.length;
+		int COLUMNS = arr[0].length;
+		int topRight = arr[0][COLUMNS - 1], n = 0, m = COLUMNS - 1, count = 0;
+		while (true) {
+			if (topRight == 1) {
+				count++;
+				if (m == 0)
+					break;
+				topRight = arr[n][--m];
+			} else {
+				if (n == ROWS - 1)
+					break;
+				topRight = arr[++n][m];
+			}
+		}
+		return count;
+	}
+}

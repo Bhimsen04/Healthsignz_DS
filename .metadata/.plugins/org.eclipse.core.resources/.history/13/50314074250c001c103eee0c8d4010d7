@@ -1,0 +1,735 @@
+package com.hsignz.bot.dialogflow.booking.diagnostic;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.gson.Gson;
+import com.hsignz.bot.dialogflow.DialogFlowService;
+import com.hsignz.bot.dialogflow.IDialogFlowFulfilment;
+import com.hsignz.bot.dialogflow.booking.doctor.DoctorBookingPatientNameIntentFulfilment;
+import com.hsignz.bot.dialogflow.other.DefaultFulfilment;
+import com.hsignz.common.constant.DialogFlowBotConstants;
+import com.hsignz.common.constant.ElasticSearchConstants;
+import com.hsignz.common.utils.HttpUtil;
+import com.hsignz.dialogflow.request.vo.BotFulfilmentRequest;
+import com.hsignz.dialogflow.request.vo.OutputContext;
+import com.hsignz.dialogflow.response.vo.BotFulfilmentResponse;
+import com.hsignz.dialogflow.response.vo.Payload;
+import com.hsignz.dialogflow.vo.AppMessageData;
+import com.hsignz.dialogflow.vo.BotRequest;
+import com.hsignz.dialogflow.vo.Button;
+import com.hsignz.dialogflow.vo.Message;
+import com.hsignz.dialogflow.vo.MessageItem;
+import com.hsignz.exceptions.HSException;
+import com.hsignz.poc.vo.McomPoc;
+import com.hsignz.poc.vo.PocListRequest;
+import com.hsignz.service.vo.ServiceItem;
+
+@Component(value = "diagnosticBookingFulfilment")
+public class DiagnosticBookingFulfilment implements IDialogFlowFulfilment {
+
+	@Autowired
+	@Qualifier("defaultFulfilment")
+	private DefaultFulfilment defaultFulfilment;
+
+	@Autowired
+	@Qualifier("bookingPatientNameIntentFulfilment")
+	private DoctorBookingPatientNameIntentFulfilment bookingPatientNameIntentFulfilment;
+
+	@Autowired
+	@Qualifier("diagnosticTestType")
+	private DiagnosticTestType diagnosticTestType;
+
+	@Autowired
+	@Qualifier("diagnosticTestNames")
+	private DiagnosticTestNames diagnosticTestNames;
+
+	@Autowired
+	@Qualifier("diagnosticBookingPocName")
+	private DiagnosticBookingPocName diagnosticBookingPocName;
+
+	@Autowired
+	@Qualifier("diagnosticBookingDateFulfilment")
+	private DiagnosticBookingDateFulfilment diagnosticBookingDateFulfilment;
+
+	@Autowired
+	@Qualifier("diagnosticBookingTimeFulfilment")
+	private DiagnosticBookingTimeFulfilment diagnosticBookingTimeFulfilment;
+
+	@Autowired
+	@Qualifier("diagnosticBookingConfirmation")
+	DiagnosticBookingConfirmation diagnosticBookingConfirmation;
+
+	@Autowired
+	@Qualifier("diagnosticBookingConfirmationYes")
+	DiagnosticBookingConfirmationYes diagnosticBookingConfirmationYes;
+
+	private DialogFlowService dialogFlowService;
+
+	@Autowired
+	public DiagnosticBookingFulfilment(@Lazy @Qualifier("chatBotService") DialogFlowService dialogFlowService) {
+		this.dialogFlowService = dialogFlowService;
+	}
+
+	// private static final String RESPONSE_BODY = "{\"speech\":\"Do you want to
+	// proceed to diagnostic booking?\",\"displayText\":\"Do you want to proceed to
+	// diagnostic
+	// booking?\",\"data\":{\"enliva\":{\"type\":4,\"cardsList\":[{\"title\":\"Do
+	// you want to proceed to diagnostic
+	// booking?\",\"buttons\":[{\"title\":\"Yes\",\"style\":2,\"action\":{\"url\":\"enliva://booking/diagnostic\"}},{\"title\":\"No\",\"style\":2,\"action\":{\"event\":{\"name\":\"HelpEvent\"}}}]}]}}}";
+
+	@Override
+	public Message getChatResponse(BotRequest botRequest) throws HSException {
+		return null;
+		// try {
+		// Message message = new ObjectMapper().readValue(RESPONSE_BODY, Message.class);
+		// if
+		// (botRequest.getResult().getParameters().get(DialogFlowBotConstants.PARAM_NAME_GIVEN_NAME)
+		// != null
+		// &&
+		// botRequest.getResult().getParameters().get(DialogFlowBotConstants.PARAM_NAME_GIVEN_NAME)
+		// != "") {
+		// String givenName = null;
+		// double lat = 0;
+		// double lon = 0;
+		// long profileId = 0;
+		// String serviceName = null;
+		// long serviceId = 0;
+		// int from = 0;
+		//
+		// int size = 4;
+		// givenName = (String) botRequest.getResult().getParameters()
+		// .get(DialogFlowBotConstants.PARAM_NAME_GIVEN_NAME);
+		// if (botRequest.getOriginalRequest() != null) {
+		// if
+		// (botRequest.getOriginalRequest().getData().containsKey(DialogFlowBotConstants.PARAM_NAME_LAT)
+		// && botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LAT) != null
+		// && (Double) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LAT) > 0.0)
+		// lat = (Double) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LAT);
+		// if
+		// (botRequest.getOriginalRequest().getData().containsKey(DialogFlowBotConstants.PARAM_NAME_LON)
+		// && botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LON) != null
+		// && (Double) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LON) > 0.0)
+		// lon = (Double) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.PARAM_NAME_LON);
+		//
+		// if (botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_PROFILEID) != null
+		// && Long.valueOf((String) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_PROFILEID)) > 0)
+		// profileId = Long.valueOf((String) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_PROFILEID));
+		//
+		// if (botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_FROM) != null
+		// && (Integer) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_FROM) > 0)
+		// from = (Integer) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_FROM);
+		//
+		// if (botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SIZE) != null
+		// && (Long) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SIZE) > 0)
+		// size = (Integer) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SIZE);
+		// }
+		//
+		// if (botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICENAME) != null
+		// && botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICENAME) != "") {
+		//
+		// serviceName = (String) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICENAME);
+		// serviceId = Long.valueOf((String) botRequest.getOriginalRequest().getData()
+		// .get(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICEID));
+		// }
+		//
+		// message = bookAppointmentForDiagnosticSuggestions(givenName, lat, lon,
+		// profileId, from, size,
+		// serviceName, serviceId, botRequest);
+		// message = bookAppointmentForDiagnosticSuggestions(givenName, lat, lon,
+		// profileId, from, size,
+		// serviceName, serviceId, botRequest);
+		// return message;
+		// }
+		// return message;
+		// } catch (Exception e) {
+		// throw new HSException("Exception occurred in the diagnostic booking
+		// fulfilment", e);
+		// }
+	}
+
+	// private Message bookAppointmentForDiagnosticSuggestions(String givenName,
+	// double lat, double lon, long profileId,
+	// int from, int size, String serviceName, long serviceId, BotRequest
+	// botRequest) throws HSException {
+	//// Message message = new Message();
+	//
+	// String searchTerm = givenName;
+	// List<Button> buttonList = new ArrayList<>();
+	// ObjectMapper mapper = new ObjectMapper();
+	// int type = MessageItem.MESSAGE_DETAILS_TYPE_SERVICE;
+	// HashMap<String, Object> map = new HashMap<String, Object>();
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_PROFILEID, profileId);
+	// map.put(DialogFlowBotConstants.PARAM_NAME_GIVEN_NAME, givenName);
+	// map.put(DialogFlowBotConstants.PARAM_NAME_LAT, lat);
+	// map.put(DialogFlowBotConstants.PARAM_NAME_LON, lon);
+	// map.put(DialogFlowBotConstants.PARAM_NAME_SPECIALITY, serviceName);
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICENAME,
+	// serviceName);
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICEID, serviceId);
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_FROM, 0);
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SIZE, size);
+	//
+	// String responseElastic = "";
+	// try {
+	// responseElastic = HttpUtil.performHTTPGetRequest(
+	// ElasticSearchConstants.GETSERVICELISTAUTOCOMPLETE + givenName +
+	// "&aliasSearchType=1&brandId=0");
+	// mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	//
+	// List<ServiceDetail> serviceList = mapper.readValue(responseElastic,
+	// TypeFactory.defaultInstance().constructCollectionType(List.class,
+	// ServiceDetail.class));
+	// if (serviceList == null || serviceList.isEmpty()) {
+	// type = MessageItem.MESSAGE_DETAILS_TYPE_DIAGNOSTIC;
+	// PocListRequest pocListReq = new PocListRequest();
+	//
+	// pocListReq.setFrom(0);
+	// if (lat != 0.0)
+	// pocListReq.setLatitude(lat);
+	// if (lon != 0.0)
+	// pocListReq.setLongitude(lon);
+	//
+	// if (profileId > 0)
+	//// pocListReq.setProfileId(profileId);
+	// pocListReq.setSearchTerm(searchTerm);
+	//
+	//// if (serviceName != null && serviceName != "") {
+	//
+	//// pocListReq.setServiceId(serviceId);
+	//// pocListReq.setServiceName(serviceName);
+	//// }
+	// pocListReq.setSize(4);
+	//
+	// responseElastic = HttpUtil.performPostRequest(new Gson().toJson(pocListReq),
+	// ElasticSearchConstants.GETDIAGNOSTICSAUTOCOMPLETE);
+	// mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	//
+	// List<McomPoc> pocList = mapper.readValue(responseElastic,
+	// TypeFactory.defaultInstance().constructCollectionType(List.class,
+	// McomPoc.class));
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_TYPE, type);
+	// buttonList = generateButtonListForPoc(pocList, map,
+	// DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+	// } else {
+	// map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_TYPE, type);
+	// buttonList = generateButtonListForService(serviceList, map,
+	// DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+	// }
+	// } catch (Exception e) {
+	//// TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// if (!buttonList.isEmpty()) {
+	//// Action msgAction = new Action();
+	//// Event msgEvent= new Event();
+	//// msgEvent.setName(DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+	//// msgEvent.setParameters(map);
+	//// msgAction.setEvent(msgEvent);
+	// return sendListResponseWithMoreOption("These are few suggestions that we have
+	// found.", buttonList,
+	// DialogFlowBotConstants.EVENT_DIAGNOSTIC_SUGGESTION_EVENT, map, from +
+	// buttonList.size(), size,
+	// type);
+	// } else
+	// return defaultFulfilment.getChatResponse(botRequest);
+	//
+	// }
+
+	// --------------------------------------------------------------------------------V2---------------------------------------------------------------------------------
+	@Override
+	public BotFulfilmentResponse getChatBotFulfilment(BotFulfilmentRequest botRequest){
+		BotFulfilmentResponse botFulfilmentResponse = null;
+		Map<String, Object> sessionData = null;
+		boolean isButtonList = true;
+		Map<String, Integer> contextLifespanMap = null;
+		try {
+			if (botRequest != null && botRequest.getQueryResult() != null
+					&& botRequest.getQueryResult().getIntent() != null
+					&& botRequest.getQueryResult().getIntent().getDisplayName() != null
+					&& !botRequest.getQueryResult().getIntent().getDisplayName().isEmpty()) {
+
+				String intentName = botRequest.getQueryResult().getIntent().getDisplayName();
+				Map<String, Object> payload = null;
+				Map<String, Object> param = null;
+				botFulfilmentResponse = new BotFulfilmentResponse();
+				sessionData = new HashMap<String, Object>();
+				contextLifespanMap = new HashMap<String, Integer>();
+
+				boolean isParam = botRequest != null && botRequest.getQueryResult() != null
+						&& botRequest.getQueryResult().getParameters() != null
+						&& botRequest.getQueryResult().getParameters().size() > 0;
+
+				boolean isPaylod = botRequest != null && botRequest.getOriginalDetectIntentRequest() != null
+						&& botRequest.getOriginalDetectIntentRequest().getPayload() != null
+						&& botRequest.getOriginalDetectIntentRequest().getPayload().size() > 0;
+
+				if (isPaylod) {
+					payload = botRequest.getOriginalDetectIntentRequest().getPayload();
+				}
+
+				if (isParam) {
+					param = botRequest.getQueryResult().getParameters();
+				}
+				if (!payload.containsKey(DialogFlowBotConstants.PAYLOAD_COUNTER)) {
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_BUTTONINPUTDISABLED_FLAG, false);
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_PATIENT_NAME_FLAG, true);
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_DATE_FLAG, true);
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_TIME_FLAG, true);
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_COUNT_TIMEDISPLAY, "");
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_DOCTOR_CONFIRMATION_FLAG, true);
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_COUNT_SHOWMORE,
+							Integer.toString(DialogFlowBotConstants.SUGGESTIONLIST_SIZE));
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_COUNT_DONE,
+							Integer.toString(DialogFlowBotConstants.SUGGESTIONLIST_SIZE));
+					sessionData.put(DialogFlowBotConstants.PAYLOAD_ADDDRESS_TYPE, "");
+					if ((!payload.containsKey(DialogFlowBotConstants.INTENT))
+							|| (payload.get(DialogFlowBotConstants.INTENT) != null
+									&& !payload.get(DialogFlowBotConstants.INTENT).toString().isEmpty()
+									&& payload.get(DialogFlowBotConstants.INTENT)
+											.equals(DialogFlowBotConstants.INTENT_BOOKINGS)))
+						payload.put(DialogFlowBotConstants.INTENT, "");
+				}
+
+				if (payload != null && !payload.isEmpty()) {
+					Iterator<String> iterator = payload.keySet().iterator();
+					while (iterator.hasNext()) {
+						String key = (String) iterator.next();
+						Object value = payload.get(key);
+						sessionData.put(key, value);
+					}
+				}
+
+				if (sessionData.containsKey(DialogFlowBotConstants.INTENT)
+						&& sessionData.get(DialogFlowBotConstants.INTENT) != null
+						&& !sessionData.get(DialogFlowBotConstants.INTENT).toString().isEmpty()
+						&& sessionData.get(DialogFlowBotConstants.INTENT)
+								.equals(DialogFlowBotConstants.INTENT_DIAGNOSTIC_BOOKING_CONFIRMATION_YES)) {
+					botFulfilmentResponse = diagnosticBookingConfirmationYes.getChatBotFulfilment(botRequest,
+							sessionData);
+					// outputContextDiagnosticBooking(botFulfilmentResponse, botRequest);
+					contextLifespanMap = new HashMap<String, Integer>();
+					contextLifespanMap.put("diagnosticbookingintent-followup", 0);
+					contextLifespanMap.put("bookingintent-followup", 0);
+					contextLifespanMap.put("yesIntent", 1);
+					setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					return botFulfilmentResponse;
+				}
+
+				if (payload.containsKey(DialogFlowBotConstants.INTENT)) {
+					String intent = (String) payload.get(DialogFlowBotConstants.INTENT);
+					if (intent != null && !intent.isEmpty()
+							&& !intent.equalsIgnoreCase(DialogFlowBotConstants.INTENT_HELP)
+							&& (intent.contains(intentName) || !intentName.contains(intent))
+							&& !intentName.equalsIgnoreCase(DialogFlowBotConstants.INTENT_TIME)
+							&& !intentName.equalsIgnoreCase(DialogFlowBotConstants.INTENT_SHOWMORE)
+							&& !intentName.equalsIgnoreCase(DialogFlowBotConstants.INTENT_DEFAULT_FALLBACK)
+							&& !intentName.equalsIgnoreCase(DialogFlowBotConstants.INTENT_YES)
+							&& !intentName.equalsIgnoreCase(DialogFlowBotConstants.INTENT_NO)) {
+						return dialogFlowService.getPreviousSessionData(botFulfilmentResponse, sessionData, intent,
+								DialogFlowBotConstants.INTENT_DIAGNOSTIC_BOOKINGS, param);
+					} else {
+						setFields(sessionData, param);
+						if (sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_PREVIOUSSESSIONDATA))
+							sessionData.remove(DialogFlowBotConstants.PAYLOAD_PREVIOUSSESSIONDATA);
+						sessionData.put(DialogFlowBotConstants.PAYLOAD_PREVIOUSSESSIONDATA,
+								new ObjectMapper().writeValueAsString(sessionData));
+					}
+				}
+
+				sessionData.put(DialogFlowBotConstants.PARAM_NAME_BOOKING_TYPE,
+						DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC);
+				sessionData.put(DialogFlowBotConstants.INTENT, DialogFlowBotConstants.INTENT_DIAGNOSTIC_BOOKINGS);
+
+				if (!sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)) {
+					botFulfilmentResponse = bookingPatientNameIntentFulfilment.getChatBotFulfilment(botRequest,
+							sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_PATIENT_FLAG)) {
+						isButtonList = false;
+						sessionData.remove(DialogFlowBotConstants.PAYLOAD_PATIENT_FLAG);
+					}
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+				}
+				if (isButtonList && (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+						&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID))) {
+					botFulfilmentResponse = diagnosticTestType.getChatBotFulfilment(botRequest, sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID))
+						&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID)) {
+					botFulfilmentResponse = diagnosticTestNames.getChatBotFulfilment(botRequest, sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID))
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID)
+						&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)
+						&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_ADDRESS)) {
+					botFulfilmentResponse = diagnosticBookingPocName.getChatBotFulfilment(botRequest, sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID))
+						&& (!sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_DATE)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_DATE_PERIOD)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_SUGGEST)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATEINMILLS))
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATE_FLAG)
+						&& sessionData.get(DialogFlowBotConstants.PAYLOAD_DATE_FLAG).equals(true)
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)) {
+					botFulfilmentResponse.setFulfillmentText(DialogFlowBotConstants.DATE_NAME_QUESTION);
+					if (botFulfilmentResponse.getPayload() == null) {
+						botFulfilmentResponse.setPayload(new Payload());
+					}
+					if (botFulfilmentResponse.getPayload().getEnliva() == null) {
+						botFulfilmentResponse.getPayload().setEnliva(new AppMessageData());
+					}
+					botFulfilmentResponse.getPayload().getEnliva().setSessionData(sessionData);
+					contextLifespanMap = new HashMap<String, Integer>();
+					contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+					setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					return botFulfilmentResponse;
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATEINMILLS)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID))
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_DATE)
+								|| sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_DATE_PERIOD)
+								|| sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_DATE_NUMBER)
+								|| sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_SUGGEST))
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)) {
+					botFulfilmentResponse = diagnosticBookingDateFulfilment.getChatBotFulfilment(botRequest,
+							sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.get(DialogFlowBotConstants.PAYLOAD_DATE_FLAG).equals(false)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID))
+						&& (!sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_TIME)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_TIME_PERIOD)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_SUGGEST)
+								&& !sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_TIMEINMILLS))
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_TIME_FLAG)
+						&& sessionData.get(DialogFlowBotConstants.PAYLOAD_TIME_FLAG).equals(true)
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATEINMILLS)
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)) {
+
+					botFulfilmentResponse.setFulfillmentText(DialogFlowBotConstants.TIME_NAME_QUESTION);
+					if (botFulfilmentResponse.getPayload() == null) {
+						botFulfilmentResponse.setPayload(new Payload());
+					}
+					if (botFulfilmentResponse.getPayload().getEnliva() == null) {
+						botFulfilmentResponse.getPayload().setEnliva(new AppMessageData());
+					}
+					botFulfilmentResponse.getPayload().getEnliva().setSessionData(sessionData);
+					contextLifespanMap = new HashMap<String, Integer>();
+					contextLifespanMap.put("diagnosticbookingintent-followup", 0);
+					contextLifespanMap.put("bookingintent-followup", 1);
+					setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					return botFulfilmentResponse;
+				}
+				if ((isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.get(DialogFlowBotConstants.PAYLOAD_DATE_FLAG).equals(false)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID))
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_TIME)
+								|| sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_TIME_PERIOD)
+								|| sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_SUGGEST))
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATEINMILLS)
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)
+						&& !sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_TIMEINMILLS))) {
+					botFulfilmentResponse = diagnosticBookingTimeFulfilment.getChatBotFulfilment(botRequest,
+							sessionData);
+					isButtonList = isButtonList(botFulfilmentResponse);
+					if (!isButtonList) {
+						contextLifespanMap = new HashMap<String, Integer>();
+						contextLifespanMap.put("diagnosticbookingintent-followup", 0);
+						contextLifespanMap.put("bookingintent-followup", 1);
+						setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+					}
+				}
+				if (isButtonList
+						&& (sessionData.containsKey(DialogFlowBotConstants.PARAM_NAME_PATIENT_PROFILEID)
+								&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID))
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATEINMILLS)
+						&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_TIMEINMILLS)
+						&& sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_POC_ID)) {
+					botFulfilmentResponse = diagnosticBookingConfirmation.getChatBotFulfilment(botRequest, sessionData);
+					contextLifespanMap.put("diagnosticbookingintent-followup", 0);
+					contextLifespanMap.put("bookingintent-followup", 0);
+					contextLifespanMap.put("yesNoIntent", 1);
+					setOutputContext(botFulfilmentResponse, botRequest, contextLifespanMap);
+				}
+			}
+		} catch (HSException e) {
+			throw new HSException("Exception occurred in the diagnostic booking fulfilment", e);
+		}
+		return botFulfilmentResponse;
+
+	}
+
+	private void setFields(Map<String, Object> sessionData, Map<String, Object> param) {
+
+		// String timePeriod;
+		if (param != null) {
+			Iterator<String> iterator2 = param.keySet().iterator();
+			while (iterator2.hasNext()) {
+				String key = (String) iterator2.next();
+				Object value = param.get(key);
+				if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_SHOWMORE))
+					break;
+				if (value.toString() != null && !value.toString().isEmpty()
+						&& !key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_BOOKING)
+						&& !key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_SHOWMORE)) {
+					if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_BOOKING_TYPE))
+						sessionData.put(DialogFlowBotConstants.PARAM_NAME_BOOKING_TYPE,
+								DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC);
+
+					else if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_PATIENT_NAME)) {
+						if (sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_PATIENT_NAME_FLAG)
+								&& sessionData.get(DialogFlowBotConstants.PAYLOAD_PATIENT_NAME_FLAG).equals(true))
+							sessionData.put(key, value);
+					}
+
+					else if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_RELATIONSHIP)) {
+						if (sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_PATIENT_NAME_FLAG)
+								&& sessionData.get(DialogFlowBotConstants.PAYLOAD_PATIENT_NAME_FLAG).equals(true))
+							sessionData.put(key, value);
+					} else if (!sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID)
+							&& key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE)) {
+						String testType = value.toString();
+						if (testType.toLowerCase().contains("home")) {
+							sessionData.put(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE, testType);
+							sessionData.put(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID, "1");
+						} else if (testType.toLowerCase().contains("Lab")) {
+							sessionData.put(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE, testType);
+							sessionData.put(DialogFlowBotConstants.PARAM_VALUE_TEST_TYPE_ID, "0");
+						}
+					}
+
+					else if (!sessionData.containsKey(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_ID)
+							&& key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_NAME)) {
+						sessionData.put(DialogFlowBotConstants.PARAM_VALUE_DIAGNOSTIC_TEST_NAME, value);
+					}
+
+					else if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_DATE_PERIOD)
+							&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_DATE_FLAG)
+							&& sessionData.get(DialogFlowBotConstants.PAYLOAD_DATE_FLAG).equals(true)) {
+						sessionData.put(DialogFlowBotConstants.PARAM_NAME_DATE_PERIOD, value);
+					} else if (key.equalsIgnoreCase(DialogFlowBotConstants.PARAM_NAME_TIME_PERIOD)
+							&& sessionData.containsKey(DialogFlowBotConstants.PAYLOAD_TIME_FLAG)
+							&& sessionData.get(DialogFlowBotConstants.PAYLOAD_TIME_FLAG).equals(true)) {
+						sessionData.put(DialogFlowBotConstants.PARAM_NAME_TIME_PERIOD, value);
+					} else
+						sessionData.put(key, value);
+				}
+			}
+		}
+	}
+
+	private BotFulfilmentResponse bookAppointmentForDiagnosticSuggestions_V2(String givenName, double lat, double lon,
+			long profileId, int from, int size, String serviceName, long serviceId, BotFulfilmentRequest botRequest)
+			throws HSException {
+		// Message message = new Message();
+
+		String searchTerm = givenName;
+		List<Button> buttonList = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		int type = MessageItem.MESSAGE_DETAILS_TYPE_SERVICE;
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_PROFILEID, profileId);
+		map.put(DialogFlowBotConstants.PARAM_NAME_GIVEN_NAME, givenName);
+		map.put(DialogFlowBotConstants.PARAM_NAME_LAT, lat);
+		map.put(DialogFlowBotConstants.PARAM_NAME_LON, lon);
+		map.put(DialogFlowBotConstants.PARAM_NAME_SPECIALITY, serviceName);
+		map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICENAME, serviceName);
+		map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SERVICEID, serviceId);
+		map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_FROM, 0);
+		map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_SIZE, size);
+
+		String responseElastic = "";
+		try {
+			responseElastic = HttpUtil.performInternalGetRequest(
+					ElasticSearchConstants.GETSERVICELISTAUTOCOMPLETE + givenName + "&aliasSearchType=1&brandId=0");
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+			List<ServiceItem> serviceList = mapper.readValue(responseElastic,
+					TypeFactory.defaultInstance().constructCollectionType(List.class, ServiceItem.class));
+			if (serviceList == null || serviceList.isEmpty()) {
+				type = MessageItem.MESSAGE_DETAILS_TYPE_DIAGNOSTIC;
+				PocListRequest pocListReq = new PocListRequest();
+
+				pocListReq.setFrom(0);
+				if (lat != 0.0)
+					pocListReq.setLatitude(lat);
+				if (lon != 0.0)
+					pocListReq.setLongitude(lon);
+
+				if (profileId > 0)
+					// pocListReq.setProfileId(profileId);
+					pocListReq.setSearchTerm(searchTerm);
+
+				// if (serviceName != null && serviceName != "") {
+
+				// pocListReq.setServiceId(serviceId);
+				// pocListReq.setServiceName(serviceName);
+				// }
+				pocListReq.setSize(4);
+				// System.out.println("pocReq "+new Gson().toJson(pocListReq));
+				// System.out.println("url is
+				// "+ElasticSearchConstants.GETDIAGNOSTICSAUTOCOMPLETE);
+
+				responseElastic = HttpUtil.performInternalPostRequest(new Gson().toJson(pocListReq),
+						ElasticSearchConstants.GETDIAGNOSTICSAUTOCOMPLETE);
+				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+				List<McomPoc> pocList = mapper.readValue(responseElastic,
+						TypeFactory.defaultInstance().constructCollectionType(List.class, McomPoc.class));
+				map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_TYPE, type);
+				buttonList = generateButtonListForPoc(pocList, map,
+						DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+			} else {
+				map.put(DialogFlowBotConstants.ORIGINALREQUEST_PARAM_TYPE, type);
+				buttonList = generateButtonListForService(serviceList, map,
+						DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (!buttonList.isEmpty()) {
+			// Action msgAction = new Action();
+			// Event msgEvent= new Event();
+			// msgEvent.setName(DialogFlowBotConstants.EVENT_DIAGNOSTIC_BOOKING_INFORMATION);
+			// msgEvent.setParameters(map);
+			// msgAction.setEvent(msgEvent);
+			return sendListResponseWithMoreOption_V2("These are few suggestions that we have found.", buttonList,
+					DialogFlowBotConstants.EVENT_DIAGNOSTIC_SUGGESTION_EVENT, map, from + buttonList.size(), size,
+					type);
+		} else
+			return defaultFulfilment.getChatBotFulfilment(botRequest);
+
+	}
+
+	private boolean isButtonList(BotFulfilmentResponse botFulfilmentResponse) throws HSException {
+		boolean flag = true;
+		try {
+			if (botFulfilmentResponse != null && botFulfilmentResponse.getPayload() != null
+					&& botFulfilmentResponse.getPayload().getEnliva() != null
+					&& botFulfilmentResponse.getPayload().getEnliva().getCardsList() != null
+					&& !botFulfilmentResponse.getPayload().getEnliva().getCardsList().isEmpty()
+					&& botFulfilmentResponse.getPayload().getEnliva().getCardsList().get(0).getButtons() != null
+					&& !botFulfilmentResponse.getPayload().getEnliva().getCardsList().get(0).getButtons().isEmpty()) {
+				flag = false;
+			} else {
+				flag = true;
+			}
+		} catch (Exception e) {
+			throw new HSException("Exception occured in " + new Object() {
+			}.getClass().getEnclosingMethod().getName() + "() of " + this.getClass().getSimpleName(), e);
+		}
+		return flag;
+	}
+
+	public static void setOutputContext(BotFulfilmentResponse botFulfilmentResponse, BotFulfilmentRequest botRequest,
+			Map<String, Integer> contextLifaSpanList) throws HSException {
+		try {
+			if (botFulfilmentResponse.getOutputContexts() == null
+					|| botFulfilmentResponse.getOutputContexts().isEmpty())
+				botFulfilmentResponse.setOutputContexts(new ArrayList<>());
+			for (Entry<String, Integer> context : contextLifaSpanList.entrySet()) {
+				OutputContext contextOut = new OutputContext();
+				contextOut.setName(botRequest.getSession() + "/contexts/" + context.getKey());
+				contextOut.setLifespanCount(context.getValue());
+				botFulfilmentResponse.getOutputContexts().add(contextOut);
+			}
+		} catch (Exception e) {
+			throw new HSException("Exception occured in setOutputContext in DiagnosticBookingFulfilment" + e);
+		}
+	}
+
+	// public void outputContextDiagnosticBooking(BotFulfilmentResponse
+	// botFulfilmentResponse,
+	// BotFulfilmentRequest botRequest) throws HSException {
+	//
+	// botFulfilmentResponse.setOutputContexts(new ArrayList<>());
+	// try {
+	// botFulfilmentResponse.setOutputContexts(new ArrayList<>());
+	// OutputContext contextOut = new OutputContext();
+	// contextOut.setName(botRequest.getSession() +
+	// "/contexts/diagnosticbookingintent-followup");
+	// contextOut.setLifespanCount(10);
+	// botFulfilmentResponse.getOutputContexts().add(contextOut);
+	//
+	// } catch (Exception e) {
+	// throw new HSException("Exception occured in " + new Object() {
+	// }.getClass().getEnclosingMethod().getName() + "() of " +
+	// this.getClass().getSimpleName(), e);
+	// }
+	// }
+
+}

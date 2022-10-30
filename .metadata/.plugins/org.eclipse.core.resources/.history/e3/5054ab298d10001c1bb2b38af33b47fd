@@ -1,0 +1,8 @@
+package HotelManagementSystem;
+
+public class Receptionist extends Person {
+	Search searchObj;
+	Booking bookingObj;
+
+	public List<RoomBooking> getAllRoomBooking();
+}

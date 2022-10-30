@@ -1,0 +1,24 @@
+package Interviews.Blackbuck;
+
+public class LengthSmallestSubArray {
+
+	public static void main(String[] args) {
+
+	}
+
+	public int getLengthOfSubArray(int[] arr, int k) {
+		int length = Integer.MAX_VALUE;
+		for (int i = 0; i < arr.length; i++) {
+			int currentLength = 0;
+			for (int j = i + 1; j < arr.length; j++) {
+				if (arr[i] + arr[j] < k)
+					currentLength++;
+			}
+			if (i == arr.length - 1 && arr[i] >= k)
+				currentLength = 1;
+			length = Math.min(length, currentLength);
+		}
+		return length;
+
+	}
+}

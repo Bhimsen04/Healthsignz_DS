@@ -1,0 +1,39 @@
+package Interviews.Oyo;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+public class Time {
+
+	public static void main(String[] args) {
+		Map<Integer, TreeSet<Employee>> map = new HashMap<Integer, TreeSet<Employee>>();
+		Employee emp = new Employee(100, 23);
+		Employee emp2 = new Employee(110, 24);
+		Employee emp3 = new Employee(200, 35);
+		Employee emp4 = new Employee(250, 40);
+
+		map.put(1000, new TreeSet<Employee>());
+		map.get(1000).add(emp);
+		map.get(1000).add(emp2);
+
+		// map.put(1001, new TreeSet<Employee>());
+		map.get(1000).add(emp3);
+		map.get(1000).add(emp4);
+
+		System.out.println(map);
+
+		List<Employee> aList = new ArrayList<Employee>();
+		aList.addAll(map.get(1000));
+
+		int index = Collections.binarySearch(aList, new Employee(120, 0));
+		System.out.println(index);
+		index = index >= 0 ? index : -(index) - 1;
+
+		System.out.println("Found at index  " + aList.get(index).value);
+
+	}
+}

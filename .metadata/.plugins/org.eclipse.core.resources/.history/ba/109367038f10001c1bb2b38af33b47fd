@@ -1,0 +1,5 @@
+package HotelManagementSystem;
+
+public class Search {
+	public List<Room> searchRoom(RoomStyle roomStyle, Date startDate, int duration);
+}

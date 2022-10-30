@@ -1,0 +1,18 @@
+package Recursion;
+
+public class Test {
+
+	public static void main(String[] args) {
+
+	}
+
+	public static int solve(int a, int b) {
+		if (b == 0)
+			return 1;
+		int res = solve(a, b / 2);
+		int currRes = res * res;
+		if ((b & 1) > 0)
+			currRes = currRes * a;
+		return currRes;
+	}
+}

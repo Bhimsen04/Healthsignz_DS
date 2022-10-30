@@ -1,0 +1,19 @@
+<databaseChangeLog 
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+   http://www.liquibase.org/xml/ns/dbchangelog 
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    
+    <property name = "alias_table_name" value="Emp"/>
+    <changeSet id="change_1" author="bhim" runAlways="true">
+    	<createTable tableName="${alias_table_name}">
+	    	<column name="EmpId" type="int"></column>
+	    	<column name="EmpName" type="varchar(10)"></column>
+ 		    <!-- <column name="EmpSalary" type="int"></column> -->
+    	</createTable>
+    </changeSet>
+  
+</databaseChangeLog>

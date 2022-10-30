@@ -1,0 +1,54 @@
+package Array;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class ThreeSum {
+
+	// https://leetcode.com/problems/3sum/
+	public static void main(String[] args) {
+		int[] nums = { 0, 0, 0 };
+		System.out.println(threeSum(nums));
+	}
+
+	public static List<List<Integer>> threeSum(int[] nums) {
+		List<List<Integer>> result = new ArrayList<>();
+		if (nums.length < 3)
+			return result;
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int i = 0; i < nums.length; i++) {
+			if (!map.containsKey(nums[i]))
+				map.put(nums[i], 1);
+			else
+				map.put(nums[i], map.get(nums[i]) + 1);
+		}
+		Set<List<Integer>> set = new HashSet<>();
+		for (int i = 0; i < nums.length - 1; i++) {
+			int firstNumber = nums[i];
+			for (int j = i + 1; j < nums.length - 2; j++) {
+				List<Integer> l = new ArrayList<>();
+				int secondNumber = nums[j];
+				int thirdNumber = -(firstNumber + secondNumber);
+				if ((!map.containsKey(thirdNumber))
+						|| (firstNumber == secondNumber && secondNumber == thirdNumber && map.get(thirdNumber) < 3)) {
+					continue;
+				} else if ((firstNumber == thirdNumber && map.get(thirdNumber) < 2)
+						|| (secondNumber == thirdNumber && map.get(thirdNumber) < 2)) {
+					continue;
+				}
+				l.add(firstNumber);
+				l.add(secondNumber);
+				l.add(thirdNumber);
+				Collections.sort(l);
+				set.add(l);
+			}
+		}
+		result.addAll(set);
+		return result;
+	}
+}

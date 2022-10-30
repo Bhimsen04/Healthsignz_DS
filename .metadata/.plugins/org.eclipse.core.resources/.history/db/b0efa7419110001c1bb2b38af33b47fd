@@ -1,0 +1,19 @@
+package HotelManagementSystem;
+
+public class RoomServiceCharge implements BaseRoomCharge {
+
+	Double cost;
+	RoomCharge baseRoomCharge;
+
+	@Override
+	public Double getCost() {
+		baseRoomCharge.setCost(baseRoomCharge.getCost() + cost);
+		return baseRoomCharge.getCost();
+	}
+
+	public void setCost(Double cost) {
+		// TODO Auto-generated method stub
+		this.cost = cost;
+	}
+
+}

@@ -1,0 +1,58 @@
+package Interview;
+
+import java.util.Stack;
+
+public class Solution {
+
+	public static void main(String[] args) {
+		System.out.println(validate_xml);
+	}
+
+	public static String validate_xml(String xml) {
+		String res = "";
+		Stack<String> stk = new Stack<>();
+		char[] ch = xml.toCharArray();
+		for (int i = 0; i < ch.length; i++) {
+			if (ch[i] == '<' && i + 1 < ch.length && ch[i + 1] == '/') {
+				i = i + 2;
+				String abc = "";
+				while (i < ch.length && ch[i] != '>') {
+					if (ch[i] == '<')
+						break;
+					abc += ch[i];
+					i++;
+				}
+				if (ch[i] == '>' && abc.length() > 1) {
+					String def = stk.peek();
+					if (def.equals(abc)) {
+						stk.pop();
+					} else {
+						return "encountered closing tag without matching open tag for </end tag>";
+					}
+				} else {
+					return "parse error";
+				}
+
+			} else if (ch[i] == '<') {
+				i = i + 1;
+				String abc = "";
+				while (i < ch.length && ch[i] != '>') {
+					if (ch[i] == '<')
+						break;
+					abc += ch[i];
+					i++;
+				}
+				if (ch[i] == '>' && abc.length() > 1) {
+					stk.push(abc);
+				} else {
+					return "parse error";
+				}
+			}
+		}
+		if (stk.isEmpty())
+			return "valid";
+		else
+			return "missing closing tag for <start tag>";
+	}
+
+}

@@ -1,0 +1,44 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+public class Solution {
+
+	// hackerrank
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		PrintWriter wr = new PrintWriter(System.out);
+//		int T = Integer.parseInt(br.readLine().trim());
+//		for (int t_i = 0; t_i < T; t_i++) {
+//			String ip[] = br.readLine().split(" ");
+//			long a = Long.parseLong(ip[0]);
+//			long b = Long.parseLong(ip[1]);
+//			long N = Long.parseLong(ip[2]);
+//
+//			//long out_ = solve(a, b, N);
+//			//System.out.println(out_);
+//
+//		}
+
+		System.out.println(6131%10);
+		wr.close();
+		br.close();
+	}
+
+	static long solve(long a, long b, long N) {
+		long res = LCM(a, b);
+		return N * res;
+	}
+
+	static long LCM(long a, long b) {
+		return (a * b) / GCD(a, b);
+	}
+
+	static long GCD(long a, long b) {
+		if (a == 0)
+			return b;
+		return GCD(b % a, a);
+	}
+}
